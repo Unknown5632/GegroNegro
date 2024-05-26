@@ -1,5 +1,7 @@
--- URL of the raw Gist content
-local gistUrl = "https://raw.githubusercontent.com/Zxlono/varsitydhc/main/key"
+getgenv().key =  "Hii"
+
+
+local gistUrl = "https://raw.githubusercontent.com/Unknown5632/GegroNegro/main/Dj"
 
 -- Function to fetch and check the key
 local function checkKey()
